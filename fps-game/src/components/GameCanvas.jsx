@@ -8,6 +8,7 @@ import Player from './Player'
 import World from './World'
 import { Perf } from 'r3f-perf'
 import { Physics } from '@react-three/rapier'      
+import EnemyTargets from './EnemyTarget'
 
 export default function GameCanvas() {
   return (
@@ -26,7 +27,7 @@ export default function GameCanvas() {
       style={{ width: '100vw', height: '100vh' }}
     >
       {/* Sky */}
-      <Perf position="top-left" />
+      {/* <Perf position="top-left" /> */}
       <Sky sunPosition={[80, 20, 100]} turbidity={8} rayleigh={0.5} />
 
       {/* Environment map — makes gold materials shine like Sketchfab */}
@@ -51,15 +52,13 @@ export default function GameCanvas() {
       {/* Warm bounce from below */}
       <hemisphereLight skyColor="#ffe0a0" groundColor="#223344" intensity={0.8} />
 
-     <Physics
-        gravity={[0, -20, 0]}   // match your old GRAVITY value
-        debug={false}            // set true to see collision shapes (green wireframe)
-      >
-        <Suspense fallback={null}>
-          <World />
-        </Suspense>
-        <Player />
-      </Physics>
+  <Physics gravity={[0, -20, 0]}>
+  <Suspense fallback={null}>
+    <World />
+  </Suspense>
+  <Player />
+  
+</Physics>
 
       {/* ── Post Processing ── */}
       <EffectComposer>

@@ -4,7 +4,7 @@ import { RigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
 
 export default function World() {
-  const { scene } = useGLTF('/models/map.glb')
+  const { scene } = useGLTF('/models/backrooms.glb')
 
   useEffect(() => {
     scene.traverse((obj) => {
