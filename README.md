@@ -1,60 +1,82 @@
 # fps-game — WebGL FPS demo (React + Vite)
 
-A small first-person shooter-style demo built with React, React Three Fiber, Rapier physics and Vite. The project includes a GLB map model, a physics-driven player capsule, pointer-lock mouse look, and simple HUD and post-processing for a polished look.
+A first-person shooter demo built with React, Vite, React Three Fiber, @react-three/rapier physics, and Zustand state management. The demo features a pointer-lock player, weapon models, enemy targets with simple AI, an interactive HUD, and post-processing effects.
+
+## Demo Video
+
+If you add a demo video file to `public/demo.mp4`, it will be visible here in supported Markdown renderers.
+
+<video src="/demos/demo.mp4" controls width="720">
+  Your browser does not support the video tag.
+</video>
+
+
 
 ## Getting started
 
-Prerequisites: Node.js (16+) and npm or an equivalent package manager.
+Prerequisites: Node.js (16+) and npm.
 
-Install dependencies and run the dev server:
+Install dependencies and run the development server:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL shown by Vite (usually http://localhost:5173) in a WebGL-capable browser (Chrome, Edge, or Firefox).
+Open the URL shown by Vite (usually http://localhost:5173) in a WebGL-capable browser.
 
 Build for production:
 
 ```bash
 npm run build
-npm run preview   # serve the production build locally
+npm run preview
 ```
 
 ## Controls
 
-- Click the canvas to capture the mouse (pointer lock).
-- Move: WASD
-- Jump: Space
-- Release mouse: Esc
-- Aim: Move the mouse while pointer is locked
+- Click the canvas to capture the mouse (pointer lock)
+- Move: `W`, `A`, `S`, `D`
+- Jump: `Space`
+- Release mouse: `Esc`
+- Shoot: left mouse button
+- Switch weapons: mouse wheel
 
-The HUD displays a crosshair and a small instruction panel.
+## Features
 
-## Project structure (key files)
+- Physics-driven first-person movement with a Rapier capsule collider
+- Pointer lock controls via `@react-three/drei`
+- Multiple weapons with view models, recoil, and firing sound effects
+- Enemy ghosts with wandering AI, health bars, and kill counting
+- Post-processing: SSAO, chromatic aberration, vignetting, and tone mapping
+- HUD showing ammo, kills, weapon name, objective, and hit feedback
+- Static world loaded from a GLB environment model with trimesh collision
 
-- `index.html` — app entry.
-- `src/main.jsx` — React bootstrap.
-- `src/App.jsx` — mounts `HUD` and `GameCanvas`.
-- `src/components/GameCanvas.jsx` — R3F Canvas, lighting, postprocessing and physics provider.
-- `src/components/Player.jsx` — physics player capsule, movement, jump, head-bob and pointer-lock controls.
-- `src/components/World.jsx` — loads `/public/models/map.glb` and converts meshes to static colliders.
-- `public/models/map.glb` — GLB map used in the demo.
+## Project structure
 
-## Notes & tips
+- `index.html` — application shell
+- `src/main.jsx` — React entry point
+- `src/App.jsx` — top-level app container for HUD and game canvas
+- `src/components/GameCanvas.jsx` — ThreeFiber canvas, lighting, environment, postprocessing, and physics provider
+- `src/components/Player.jsx` — player movement, jumping, firing, pointer lock, and camera sync
+- `src/components/World.jsx` — loads `/models/backrooms.glb` and converts it to a fixed collision body
+- `src/components/GunViewModel.jsx` — first-person weapon models and firing animation
+- `src/components/EnemyTarget.jsx` — enemy AI, damage handling, and death behavior
+- `src/components/HUD.jsx` — on-screen ammo, kills, objective, and crosshair overlay
+- `src/store/UserStore.js` — Zustand game state for ammo, health, kills, weapon selection, and hit feedback
 
-- The player uses a Rapier `RigidBody` capsule with a downward raycast for reliable ground detection.
-- Toggle physics debug by setting `debug={true}` on the `Physics` component in `GameCanvas.jsx`.
-- The project already includes `dev`, `build`, and `preview` scripts in `package.json`.
+## Asset notes
+
+- World model: `public/models/backrooms.glb`
+- Enemy model: `public/models/ghost.glb`
+- Weapon models: `public/models/gun.glb`, `public/models/handgun.glb`, `public/models/ak-742.glb`
+- Sounds and textures are stored under `public/sounds` and `public/images`
 
 ## Troubleshooting
 
-- If the scene is black or won't render, confirm WebGL is enabled and the browser supports required features.
-- Large `map.glb` files may take time to load; open the browser console for progress/errors.
+- If the scene remains black, ensure your browser supports WebGL and hardware acceleration.
+- If models or sounds fail to load, check that static assets exist in `public/models` and `public/sounds`.
+- If pointer lock is not engaging, click the canvas and allow browser permission prompts.
 
 ## License & credits
 
-This repository is a demo. Assets (models/materials) may have separate licenses — check `public/models` for source information.
-
-Enjoy — let me know if you want a README variant with deployment steps (GitHub Pages / Netlify) or a short developer guide for adding new weapons, enemies, or networked multiplayer.
+This repository is a demo project. Check individual assets in `public/models`, `public/sounds`, and `public/images` for any separate license terms.
