@@ -10,7 +10,7 @@ import BulletHoleSystem from './BulletHole'
 import EnemyTargets from './EnemyTarget'
 import { useGameStore } from '../store/userStore'
 
-const SPEED = 10
+const SPEED =5
 const JUMP_FORCE = 6
 
 

@@ -38,4 +38,4 @@ export default function World() {
   )
 }
 
-useGLTF.preload('/models/map.glb')
+useGLTF.preload('/models/backrooms.glb')
