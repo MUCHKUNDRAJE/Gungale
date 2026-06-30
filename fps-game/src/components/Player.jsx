@@ -3,12 +3,12 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls } from '@react-three/drei'
 import { RigidBody, CapsuleCollider, useRapier } from '@react-three/rapier'
 import * as THREE from 'three'
-import GunViewModel from './GunviewModel'
+import GunViewModel from './GunViewModel.jsx'
 import MuzzleFlash from './MuzzleFlash'
 import BulletSystem from './BulletSystem'
 import BulletHoleSystem from './BulletHole'
 import EnemyTargets from './EnemyTarget'
-import { useGameStore } from '../store/userStore'
+import { useGameStore } from '../store/UserStore.js'
 
 const SPEED =5
 const JUMP_FORCE = 6

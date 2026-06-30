@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { RigidBody, CapsuleCollider } from '@react-three/rapier'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { useGameStore } from '../store/userStore'
+import { useGameStore } from '../store/UserStore.js'
 
 const ENEMY_HP = 100
 

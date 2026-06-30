@@ -1,5 +1,5 @@
 // src/components/HUD.jsx
-import { useGameStore } from '../store/userStore'
+import { useGameStore } from '../store/UserStore.js'
 
 const MAX_AMMO = 72
 
