@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { useGameStore } from '../store/userStore'
+import { useGameStore } from '../store/UserStore.js'
 
 // ── Per-weapon config ──────────────────────────────────────
 const WEAPONS = [
