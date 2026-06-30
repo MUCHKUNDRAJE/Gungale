@@ -18,7 +18,7 @@ const WEAPONS = [
   {
     name: 'hand Gun',
     path: '/models/handgun.glb',
-    sound: '/sounds/pistol.m4a',
+    sound: '/sounds/pistol.mp3',
     position: [0.3, -0.3, -0.5],
     rotation: [0, 96, 0.4],
     scale: 0.4,

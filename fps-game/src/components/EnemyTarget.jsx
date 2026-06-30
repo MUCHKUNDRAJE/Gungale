@@ -222,6 +222,12 @@ export default function EnemyTargets({ enemyRefs }) {
     { id: 3, position: [-28,  0.01, 1.85]   },
     { id: 4, position: [-24,  0.01, 0.890]  },
     { id: 5, position: [-2,   0.01, 8.85]   },
+     { id: 6, position: [-47,   0.01, 6.75]   },
+
+      { id: 7, position: [-48,   0.01, 0.13]   },
+
+       { id: 8, position: [-62,   0.01, 8.85]   },
+        { id: 9, position: [-62,   0.01, 0.75]   },
   ])
 
   const handleKill = (id) => {

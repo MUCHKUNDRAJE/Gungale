@@ -176,12 +176,13 @@ const onMouseUp = (e) => {
 
     body.setAngvel({ x: 0, y: 0, z: 0 }, true)
   })
+const setLocked = useGameStore((s) => s.setLocked)
 
   return (
     <>
       <RigidBody
         ref={playerRef}
-        position={[0, 0.5, 0]}
+        position={[0,2, 0]}
         enabledRotations={[false, false, false]}
         friction={0}
         restitution={0}
@@ -193,11 +194,12 @@ const onMouseUp = (e) => {
           args={[PLAYER_HEIGHT * 0.5, 0.4]}
         />
       </RigidBody>
-
       <PointerLockControls
         ref={controlsRef}
         onLock={() => console.log('locked')}
         onUnlock={() => console.log('unlocked')}
+          onLock={() => setLocked(true)}
+  onUnlock={() => setLocked(false)}
       />
 
       <GunViewModel
