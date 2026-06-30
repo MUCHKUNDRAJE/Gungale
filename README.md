@@ -10,7 +10,11 @@ If you add a demo video file to `public/demo.mp4`, it will be visible here in su
   Your browser does not support the video tag.
 </video>
 
+## Screenshot
 
+![Game screenshot](/demos/ss.gif)
+
+> Add a screenshot file at `fps-game/public/screenshot.png` to display the game image here.
 
 ## Getting started
 
