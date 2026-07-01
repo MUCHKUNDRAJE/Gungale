@@ -36,6 +36,7 @@ export default function HUD() {
           <h1 className="league-gothic" style={{ fontSize: 64, letterSpacing: 4, marginBottom: 8 }}>
           GUN GALE
           </h1>
+
           <p className="league-gothic" style={{ fontSize: 14, color: 'rgba(0,200,230,0.6)', letterSpacing: 2, marginBottom: 40 }}>
             ELIMINATE ALL TARGETS
           </p>
@@ -49,11 +50,15 @@ export default function HUD() {
             CLICK TO PLAY
           </div>
 
+
           <div style={{ marginTop: 30, fontSize: 12, color: 'rgba(255,255,255,0.4)', letterSpacing: 1, textAlign: 'center', lineHeight: 1.8 }}>
             <p>WASD — move &nbsp;&nbsp; SPACE — jump</p>
             <p>MOUSE — look &nbsp;&nbsp; CLICK — fire &nbsp;&nbsp; SCROLL — switch weapon</p>
             <p>ESC — pause</p>
           </div>
+            <h1 className="tiktok-sans mt-10 capitalize" style={{ fontSize:12}}>
+              A single Player FPS game Created by Muchkundraje Thote
+         </h1>
         </div>
       )}
 
