@@ -1,6 +1,7 @@
 // src/components/HUD.jsx
 import { useState } from 'react'
 import { useGameStore } from '../store/UserStore.js'
+import BGM from './BGM.jsx'
 
 const MAX_AMMO = 72
 
@@ -33,6 +34,7 @@ export default function HUD() {
             document.querySelector('canvas')?.requestPointerLock?.()
           }}
         >
+          
           <h1 className="league-gothic" style={{ fontSize: 64, letterSpacing: 4, marginBottom: 8 }}>
           GUN GALE
           </h1>
@@ -58,6 +60,7 @@ export default function HUD() {
           </div>
             <h1 className="tiktok-sans mt-10 capitalize" style={{ fontSize:12}}>
               A single Player FPS game Created by Muchkundraje Thote
+        
          </h1>
         </div>
       )}
@@ -120,6 +123,8 @@ export default function HUD() {
               <span className="league-gothic" style={{ letterSpacing:2, color:'rgba(0,200,230,0.5)' }}>KILLS  </span>
               <span style={{ fontSize:20, fontWeight:'bold', color:'#ff4444', letterSpacing:2 }}>{kills}</span>
             </div>
+
+            
           </div>
 
           {/* Crosshair */}

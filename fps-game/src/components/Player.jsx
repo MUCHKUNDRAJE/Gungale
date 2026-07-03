@@ -11,7 +11,7 @@ import EnemyTargets from './EnemyTarget'
 import { useGameStore } from '../store/UserStore.js'
 
 const SPEED =5
-const JUMP_FORCE = 6
+const JUMP_FORCE = 3
 
 
 const BOB_SPEED = 0
