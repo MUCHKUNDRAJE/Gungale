@@ -7,7 +7,7 @@ const MAX_BULLETS   = 20
 const BULLET_SPEED  = 80
 const BULLET_LIFE   = 1.2
 const BULLET_RADIUS = 0.04
-const BULLET_DAMAGE = 25     // per shot — 4 shots to kill
+const BULLET_DAMAGE = 25
 
 export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
   const { scene, camera } = useThree()
@@ -16,8 +16,8 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
   const impactPool  = useRef([])
   const poolReady   = useRef(false)
 
-  // Kill counter
-  const killCount = useRef(0)
+  // ✅ Tag to identify our own pool meshes so raycaster ignores them
+  const POOL_TAG = '__bulletPool'
 
   useImperativeHandle(ref, () => ({ fire: fireBullet }))
 
@@ -27,6 +27,8 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
     for (let i = 0; i < MAX_BULLETS; i++) {
       const m = new THREE.Mesh(geo, mat)
       m.visible = false
+      m.userData[POOL_TAG] = true   // ✅ tag it
+      m.raycast = () => {}          // ✅ disable raycasting on bullet meshes entirely
       scene.add(m)
       bulletPool.current.push(m)
     }
@@ -36,6 +38,8 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
       const imat = new THREE.MeshBasicMaterial({ color: '#ff8800', transparent: true, opacity: 0.9 })
       const m = new THREE.Mesh(igeo, imat)
       m.visible = false
+      m.userData[POOL_TAG] = true   // ✅ tag impact flashes too
+      m.raycast = () => {}          // ✅ disable raycasting
       scene.add(m)
       impactPool.current.push(m)
     }
@@ -59,30 +63,36 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
     const startPos  = camera.position.clone().add(direction.clone().multiplyScalar(0.6))
     const raycaster = new THREE.Raycaster(startPos, direction, 0, 300)
 
-    // Get all hittable objects
-    const hittable = scene.children.filter(c =>
-      !['DirectionalLight','AmbientLight','HemisphereLight','PointLight'].includes(c.type)
-      && !c.isCamera
-    )
-    const hits = raycaster.intersectObjects(hittable, true)
+    // ✅ Filter out: lights, cameras, AND our own bullet/impact pool meshes
+    const hittable = []
+    scene.traverse((obj) => {
+      if (
+        obj.isMesh &&
+        !obj.userData[POOL_TAG] &&      // ✅ skip bullet pool
+        !obj.userData.__impactPool      // ✅ skip impact pool
+      ) {
+        hittable.push(obj)
+      }
+    })
 
-    let hitPoint  = null
-    let hitNormal = new THREE.Vector3(0, 0, 1)
-    let hitDist   = 300
-    let hitEnemy  = null
+    const hits = raycaster.intersectObjects(hittable, false) // false = no recursion, already flat list
+
+    let hitPoint   = null
+    let hitNormal  = new THREE.Vector3(0, 0, 1)
+    let hitDist    = 300
     let hitEnemyId = null
 
     if (hits.length > 0) {
-      const first    = hits[0]
-      hitPoint       = first.point.clone()
-      hitDist        = first.distance
-      hitNormal      = first.face?.normal?.clone() ?? new THREE.Vector3(0, 1, 0)
+      const first = hits[0]
+      hitPoint    = first.point.clone()
+      hitDist     = first.distance
+      hitNormal   = first.face?.normal?.clone() ?? new THREE.Vector3(0, 1, 0)
 
       // Transform normal to world space
       const normalMatrix = new THREE.Matrix3().getNormalMatrix(first.object.matrixWorld)
       hitNormal.applyMatrix3(normalMatrix).normalize()
 
-      // Check if enemy was hit
+      // Walk up parent chain to find enemy
       let obj = first.object
       while (obj) {
         if (obj.userData?.isEnemy) {
@@ -98,24 +108,25 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
     bullet.visible = true
 
     bullets.current.push({
-      mesh: bullet,
-      velocity: direction.clone().multiplyScalar(BULLET_SPEED),
-      life: BULLET_LIFE,
-      startPos: startPos.clone(),
-      maxDist: hitDist,
+      mesh:      bullet,
+      velocity:  direction.clone().multiplyScalar(BULLET_SPEED),
+      life:      BULLET_LIFE,
+      startPos:  startPos.clone(),
+      maxDist:   hitDist,
       hitPoint,
       hitNormal,
       hitEnemyId,
-      hasHit: false,
+      hasHit:    false,
     })
   }
 
-  function spawnImpact(position) {
+  function spawnImpact(position, isEnemy = false) {
     const m = impactPool.current.find(x => !x.visible) || impactPool.current[0]
     m.position.copy(position)
-    m.visible = true
+    m.material.color.set(isEnemy ? '#ff4400' : '#ff8800')
     m.material.opacity = 0.9
-    setTimeout(() => { m.visible = false }, 100)
+    m.visible = true
+    setTimeout(() => { m.visible = false }, isEnemy ? 80 : 100)
   }
 
   useFrame((_, delta) => {
@@ -130,22 +141,14 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
         b.hasHit = true
         b.mesh.visible = false
 
-        spawnImpact(b.hitPoint)
-
         if (b.hitEnemyId !== null && b.hitEnemyId !== undefined) {
-          // Hit an enemy — deal damage
-          const enemyMesh = enemyGroupsRef?.current?.[b.hitEnemyId]
-          if (enemyMesh?.takeDamage) {
-            enemyMesh.takeDamage(BULLET_DAMAGE)
-          }
-          // Orange impact flash for enemy
-          const flash = impactPool.current.find(x => !x.visible) || impactPool.current[0]
-          flash.position.copy(b.hitPoint)
-          flash.material.color.set('#ff4400')
-          flash.visible = true
-          setTimeout(() => { flash.visible = false }, 80)
+          // ✅ Hit enemy
+          const enemy = enemyGroupsRef?.current?.[b.hitEnemyId]
+          if (enemy?.takeDamage) enemy.takeDamage(BULLET_DAMAGE)
+          spawnImpact(b.hitPoint, true)
         } else {
-          // Hit a wall — spawn bullet hole decal
+          // ✅ Hit wall — bullet hole decal
+          spawnImpact(b.hitPoint, false)
           if (hitsRef?.current?.spawnHole) {
             hitsRef.current.spawnHole(b.hitPoint, b.hitNormal)
           }

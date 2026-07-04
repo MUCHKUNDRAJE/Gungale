@@ -5,21 +5,22 @@ import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { useGameStore } from '../store/UserStore.js'
 
-// ── Per-weapon config ──────────────────────────────────────
 const WEAPONS = [
   {
     name: 'PP-19',
     path: '/models/gun.glb',
     sound: '/sounds/gunshot.wav',
     position: [0.3, -0.3, -0.5],
+    adsPosition: [0, -0.288, -0.43],   // ← centered & closer for ADS
     rotation: [0, Math.PI, 0],
     scale: 0.008,
   },
   {
     name: 'hand Gun',
     path: '/models/handgun.glb',
-    sound: '/sounds/pistol.mp3',
+    sound: '/sounds/pistolm4a.wav',
     position: [0.3, -0.3, -0.5],
+    adsPosition: [0.26, -0.10, -0.49],
     rotation: [0, 96, 0.4],
     scale: 0.4,
   },
@@ -28,6 +29,7 @@ const WEAPONS = [
     path: '/models/ak-742.glb',
     sound: '/sounds/gunshot.wav',
     position: [0.3, -0.3, -0.5],
+    adsPosition: [0.3, -0.107, -0.45],
     rotation: [0, Math.PI, 0],
     scale: 1.3,
   },
@@ -37,26 +39,27 @@ const SWAY_AMOUNT  = 0.04
 const BOB_AMOUNT   = 0.018
 const BOB_SPEED    = 10
 const LERP_SPEED   = 8
+const ADS_SPEED    = 10
 
-// Swap animation timing
+const NORMAL_FOV   = 75
+const ADS_FOV      = 45
+
 const SWAP_DOWN_TIME = 0.15
 const SWAP_UP_TIME   = 0.2
 const SWAP_DROP_DIST = 0.4
 
-// Preload all models
 WEAPONS.forEach(w => useGLTF.preload(w.path))
 
-function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
+function WeaponModel({ weapon, isMovingRef, isShooting, swapState, isADS }) {
   const { camera } = useThree()
   const { scene }  = useGLTF(weapon.path)
-  const gunRef        = useRef()
-  const clonedScene   = useRef()
-  const centerOffset  = useRef(new THREE.Vector3())
+  const gunRef       = useRef()
+  const clonedScene  = useRef()
+  const centerOffset = useRef(new THREE.Vector3())
   const [ready, setReady] = useState(false)
 
-  // ── Audio setup ──────────────────────────────────────
-  const soundRef        = useRef()
-  const prevShootSound  = useRef(false)
+  const soundRef       = useRef()
+  const prevShootSound = useRef(false)
 
   useEffect(() => {
     clonedScene.current = scene.clone(true)
@@ -75,7 +78,6 @@ function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
     setReady(true)
   }, [scene])
 
-  // Setup audio listener + sound on mount
   useEffect(() => {
     let listener = camera.children.find(c => c.type === 'AudioListener')
     if (!listener) {
@@ -98,12 +100,9 @@ function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
     }
   }, [camera, weapon.sound])
 
-  // Play sound when isShooting flips true
   useEffect(() => {
     if (isShooting && !prevShootSound.current && soundRef.current?.buffer) {
       if (soundRef.current.isPlaying) soundRef.current.stop()
-
-      // Slight random pitch variation for realism
       const pitch = 0.92 + Math.random() * 0.16
       soundRef.current.setPlaybackRate(pitch)
       soundRef.current.play()
@@ -119,10 +118,15 @@ function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
   const recoilRot   = useRef(0)
   const prevShoot   = useRef(false)
 
+  // Lerped ADS position
+  const currentPos  = useRef(new THREE.Vector3(...weapon.position))
+  const currentFOV  = useRef(NORMAL_FOV)
+
   useFrame((state, delta) => {
     if (!gunRef.current) return
     const isMoving = isMovingRef.current
     const t = Math.min(delta * LERP_SPEED, 1)
+    const tADS = Math.min(delta * ADS_SPEED, 1)
 
     // Recoil
     if (isShooting && !prevShoot.current) {
@@ -133,26 +137,38 @@ function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
     recoilZ.current   += (0 - recoilZ.current)   * t * 1.5
     recoilRot.current += (0 - recoilRot.current) * t * 1.5
 
-    // Walk bob
+    // Walk bob — reduced when ADS
+    const bobScale = isADS.current ? 0.2 : 1
     if (isMoving) {
       bobTimer.current += delta * BOB_SPEED
-      const targetBob = Math.sin(bobTimer.current) * BOB_AMOUNT
+      const targetBob = Math.sin(bobTimer.current) * BOB_AMOUNT * bobScale
       currentBobY.current += (targetBob - currentBobY.current) * t
     } else {
       bobTimer.current = 0
       currentBobY.current += (0 - currentBobY.current) * t
     }
 
-    // Mouse sway
+    // Mouse sway — reduced when ADS
+    const swayScale = isADS.current ? 0.2 : 1
     const mouseX = state.mouse.x
     const mouseY = state.mouse.y
-    swayX.current += (-mouseX * SWAY_AMOUNT - swayX.current) * t
-    swayY.current += (-mouseY * SWAY_AMOUNT - swayY.current) * t
+    swayX.current += (-mouseX * SWAY_AMOUNT * swayScale - swayX.current) * t
+    swayY.current += (-mouseY * SWAY_AMOUNT * swayScale - swayY.current) * t
+
+    // Lerp gun position between hip and ADS
+    const targetPos = isADS.current ? weapon.adsPosition : weapon.position
+    currentPos.current.lerp(new THREE.Vector3(...targetPos), tADS)
+
+    // Lerp FOV
+    const targetFOV = isADS.current ? ADS_FOV : NORMAL_FOV
+    currentFOV.current += (targetFOV - currentFOV.current) * tADS
+    camera.fov = currentFOV.current
+    camera.updateProjectionMatrix()
 
     // Swap drop offset
     const swapDrop = swapState.current.dropAmount
 
-    const camPos = new THREE.Vector3(...weapon.position)
+    const camPos = currentPos.current.clone()
     camPos.x += swayX.current
     camPos.y += swayY.current + currentBobY.current - swapDrop
     camPos.z += recoilZ.current
@@ -182,32 +198,45 @@ function WeaponModel({ weapon, isMovingRef, isShooting, swapState }) {
 }
 
 export default function GunViewModel({ isMovingRef, isShooting }) {
-  const [weaponIndex, setWeaponIndex] = useState(0)
+  const [weaponIndex, setWeaponIndex]     = useState(0)
   const [renderedIndex, setRenderedIndex] = useState(0)
   const setGunChoose = useGameStore((s) => s.setGunChoose)
 
-  const swapState = useRef({
-    phase: 'idle',
-    dropAmount: 0,
-    timer: 0,
-  })
-
+  const swapState = useRef({ phase: 'idle', dropAmount: 0, timer: 0 })
   const isSwapping = useRef(false)
+  const isADS      = useRef(false)
+
+  // Right click to ADS
+  useEffect(() => {
+    const onMouseDown = (e) => {
+      if (e.button === 2) isADS.current = true
+    }
+    const onMouseUp = (e) => {
+      if (e.button === 2) isADS.current = false
+    }
+    const onContextMenu = (e) => e.preventDefault()
+
+    window.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('mouseup', onMouseUp)
+    window.addEventListener('contextmenu', onContextMenu)
+    return () => {
+      window.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('contextmenu', onContextMenu)
+    }
+  }, [])
 
   useEffect(() => {
     const onWheel = (e) => {
       if (isSwapping.current) return
-
       const dir = e.deltaY > 0 ? 1 : -1
       const nextIndex = (weaponIndex + dir + WEAPONS.length) % WEAPONS.length
-
       if (nextIndex === weaponIndex) return
 
       setGunChoose(WEAPONS[nextIndex].name)
       isSwapping.current = true
       swapState.current.phase = 'down'
       swapState.current.timer = 0
-
       setWeaponIndex(nextIndex)
     }
 
@@ -222,7 +251,6 @@ export default function GunViewModel({ isMovingRef, isShooting }) {
       s.timer += delta
       const p = Math.min(s.timer / SWAP_DOWN_TIME, 1)
       s.dropAmount = p * SWAP_DROP_DIST
-
       if (p >= 1) {
         setRenderedIndex(weaponIndex)
         s.phase = 'up'
@@ -233,7 +261,6 @@ export default function GunViewModel({ isMovingRef, isShooting }) {
       const p = Math.min(s.timer / SWAP_UP_TIME, 1)
       const eased = 1 - Math.pow(1 - p, 3)
       s.dropAmount = (1 - eased) * SWAP_DROP_DIST
-
       if (p >= 1) {
         s.phase = 'idle'
         s.dropAmount = 0
@@ -249,6 +276,7 @@ export default function GunViewModel({ isMovingRef, isShooting }) {
       isMovingRef={isMovingRef}
       isShooting={isShooting}
       swapState={swapState}
+      isADS={isADS}
     />
   )
 }

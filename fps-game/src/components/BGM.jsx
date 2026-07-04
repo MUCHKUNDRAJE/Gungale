@@ -1,34 +1,42 @@
-// src/components/BGM.jsx
 import { useEffect, useRef, useState } from 'react'
 import { useGameStore } from '../store/UserStore.js'
 
 export default function BGM({ src = '/sounds/bgm.mp3', volume = 0.3 }) {
-  const audioRef  = useRef(null)
-  const isLocked  = useGameStore((s) => s.isLocked)
+  const audioRef   = useRef(null)
+  const isLocked   = useGameStore((s) => s.isLocked)
+  const isGameOver = useGameStore((s) => s.isGameOver)
   const [muted, setMuted] = useState(false)
 
-  // Create audio element once
   useEffect(() => {
-    const audio       = new Audio(src)
-    audio.loop        = true
-    audio.volume      = volume
-    audio.preload     = 'auto'
-    audioRef.current  = audio
-
+    const audio      = new Audio(src)
+    audio.loop       = true
+    audio.volume     = volume
+    audio.preload    = 'auto'
+    audioRef.current = audio
     return () => {
       audio.pause()
       audio.src = ''
     }
   }, [src])
 
-  // Play when game starts (player locks pointer), pause when ESC
+  useEffect(() => {
+    if (isGameOver && audioRef.current) {
+      audioRef.current.pause()
+    }
+  }, [isGameOver])
+
+
+  useEffect(() => {
+  if (isGameOver) {
+    document.exitPointerLock?.()
+  }
+}, [isGameOver])
+
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-
-    if (isLocked) {
+    if (isLocked && !isGameOver) {
       audio.play().catch(() => {
-        // Browser blocked autoplay — will try again on next user gesture
         const resume = () => {
           audio.play()
           window.removeEventListener('click', resume)
@@ -40,17 +48,13 @@ export default function BGM({ src = '/sounds/bgm.mp3', volume = 0.3 }) {
     } else {
       audio.pause()
     }
-  }, [isLocked])
+  }, [isLocked, isGameOver])
 
-  // Mute toggle
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.muted = muted
-    }
+    if (audioRef.current) audioRef.current.muted = muted
   }, [muted])
 
-  // Only show mute button when game is running
-  if (!isLocked) return null
+  if (!isLocked || isGameOver) return null
 
   return (
     <button
@@ -60,7 +64,6 @@ export default function BGM({ src = '/sounds/bgm.mp3', volume = 0.3 }) {
         bottom: 10,
         left: '4%',
         transform: 'translateX(-50%)',
-        marginTop: 50,     // sit below your existing top-center HUD panel
         zIndex: 20,
         background: 'rgba(0,10,25,0.82)',
         border: '1px solid rgba(0,180,220,0.3)',
@@ -73,8 +76,10 @@ export default function BGM({ src = '/sounds/bgm.mp3', volume = 0.3 }) {
         pointerEvents: 'auto',
       }}
     >
-      {muted ? 
-    <p className='league-gothic text-white text-xl'>♪ OFF</p> : <p className='league-gothic text-white text-xl'>♪ ON</p> }
+      {muted
+        ? <p className="league-gothic text-white text-xl">♪ OFF</p>
+        : <p className="league-gothic text-white text-xl">♪ ON</p>
+      }
     </button>
   )
 }
