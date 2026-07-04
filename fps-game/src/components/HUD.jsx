@@ -69,6 +69,7 @@ export default function HUD() {
             YOU WERE ELIMINATED
           </p>
 
+
           <p className="league-gothic" style={{
             fontSize: 24,
             color: 'rgba(255,200,200,0.5)',
@@ -77,6 +78,7 @@ export default function HUD() {
           }}>
             KILLS: {kills}
           </p>
+            <p className=' tiktok-sans capitalize mb-10'>If cursor does't visible press ESC</p>
 
           <button
             className="league-gothic"
@@ -120,6 +122,7 @@ export default function HUD() {
           <p className="league-gothic" style={{ fontSize: 14, color: 'rgba(0,200,230,0.6)', letterSpacing: 2, marginBottom: 40 }}>
             ELIMINATE ALL TARGETS
           </p>
+        
           <div className="league-gothic" style={{
             border: '1px solid rgba(0,180,220,0.4)',
             background: 'rgba(0,180,220,0.08)',
@@ -164,7 +167,7 @@ export default function HUD() {
           )}
 
           <div style={{ background: 'rgba(0,10,25,0.82)', border: '1px solid rgba(0,180,220,0.3)' }}
-            className="text-white absolute right-5 top-5">
+            className="text-white absolute left-5 bottom-13 opacity-70">
             <p className="tiktok-sans capitalize text-md px-6 py-2">
               <i className="ri-poker-diamonds-fill"></i> Objective - Kill all the ghosts in the surrounding
             </p>
@@ -207,12 +210,12 @@ export default function HUD() {
             <i className="ri-drag-move-line"></i>
           </div>
 
-          <div className="absolute right-10 top-20">
+          <div className="absolute right-12 top-7  scale-110">
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold ml-8" style={{ color: hpColor }}>
                   <p className="league-gothic [-webkit-text-stroke:0.3px_white] text-7xl">
-                    {Math.ceil(health)}
+                    {Math.ceil(health)}%
                   </p>
                 </span>
               </div>
