@@ -9,9 +9,12 @@ import World from './World'
 import { Perf } from 'r3f-perf'
 import { Physics } from '@react-three/rapier'      
 import EnemyTargets from './EnemyTarget'
+import Loader from './loader'
 
 export default function GameCanvas() {
   return (
+    <>
+        <Loader />  
     <Canvas
       shadows
        gl={{
@@ -113,5 +116,6 @@ export default function GameCanvas() {
 
       </EffectComposer>
     </Canvas>
+    </>
   )
 }
