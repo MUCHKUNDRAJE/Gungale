@@ -9,7 +9,7 @@ import World from './World'
 import { Perf } from 'r3f-perf'
 import { Physics } from '@react-three/rapier'      
 import EnemyTargets from './EnemyTarget'
-import Loader from './loader'
+import Loader from './Loader'
 
 export default function GameCanvas() {
   return (
