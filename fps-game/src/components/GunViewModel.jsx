@@ -9,7 +9,7 @@ const WEAPONS = [
   {
     name: 'PP-19',
     path: '/models/gun.glb',
-    sound: '/sounds/gunshot.wav',
+    sound: '/sounds/gunshot2.wav',
     position: [0.3, -0.3, -0.5],
     adsPosition: [0, -0.288, -0.43],   // ← centered & closer for ADS
     rotation: [0, Math.PI, 0],

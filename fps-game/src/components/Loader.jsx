@@ -50,15 +50,14 @@ export default function Loader() {
         <div style={{
           height: '100%',
           width: `${progress}%`,
-          background: 'linear-gradient(90deg, #00d4ff88, #00d4ff)',
-
+          
           transition: 'width 0.3s ease',
-        }} />
+        }} className='bg-white' />
       </div>
 
       <p className="league-gothic text-xl" style={{
        
-        color: 'rgba(0,200,230,0.4)',
+        color: 'white',
       }}>
         {Math.floor(progress)}%
       </p>

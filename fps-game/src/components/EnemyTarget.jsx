@@ -319,6 +319,15 @@ export default function EnemyTargets({ enemyRefs }) {
     { id: 7, position: [-48, 0.01,  0.13] },
     { id: 8, position: [-62, 0.01,  8.85] },
     { id: 9, position: [-62, 0.01,  0.75] },
+{ id: 10, position: [-39, 0.01,  3.75] },
+{ id: 11, position: [-43, 0.01,  3.75] },
+{ id: 12, position: [-55, 0.01,  3.85] },
+{ id: 13, position: [-64, 0.01,  5.25] },
+{ id: 14, position: [-68, 0.01,  6.25] },
+{ id: 15, position: [-68, 0.01,  7.25] },
+{ id: 16, position: [-68, 0.01,  8.25] },
+{ id: 17, position: [-58, 0.01,  2.25] },
+
   ])
 
   const handleKill = (id) => setEnemies(prev => prev.filter(e => e.id !== id))

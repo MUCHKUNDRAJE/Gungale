@@ -132,6 +132,8 @@ export default function Player() {
 
     camera.position.set(bodyPos.x, bodyPos.y + PLAYER_HEIGHT, bodyPos.z)
 
+ 
+
     if (!controlsRef.current?.isLocked) return
 
    if (isGameOver || !isLocked) {
@@ -140,6 +142,8 @@ export default function Player() {
     return
   }
 
+
+console.log(camera.position)
     // Ground check
     groundRay.origin.x = bodyPos.x
     groundRay.origin.y = bodyPos.y
@@ -224,7 +228,7 @@ export default function Player() {
       camera.position.x += Math.sin(t * 17 + shakeSeedX.current) * amount
       camera.position.y += Math.sin(t * 13 + shakeSeedY.current) * amount
     }
-
+    
     body.setAngvel({ x: 0, y: 0, z: 0 }, true)
   })
 
