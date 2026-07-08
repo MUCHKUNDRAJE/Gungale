@@ -10,8 +10,17 @@ export const useGameStore = create((set) => ({
   isLocked:   false,
   isGameOver: false,
   GunChoose:  'PP-19',
+  bossActive:   false,
+  bossDefeated: false,
+  cutscenePlaying: false,
+  setBossActive:     (v) => set({ bossActive: v }),
+  setBossDefeated:   (v) => set({ bossDefeated: v }),
+  setCutscene:       (v) => set({ cutscenePlaying: v }),
 
   playerPos: [0, 1, 0],
+  // store
+bossHp:    1000,
+setBossHp: (v) => set({ bossHp: v }),
   setLocked:    (v) => set({ isLocked: v }),
   setGunChoose: (v) => set({ GunChoose: v }),
   setHealth:    (v) => set({ health: v, isGameOver: v <= 0 }),

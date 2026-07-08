@@ -3,6 +3,7 @@ import GameCanvas from './components/GameCanvas'
 import HUD from './components/HUD'
 import MobileControls from './components/MobileControls'
 import BGM from './components/BGM'
+import BossCutscene from './components/BossCutscene'
 
 export default function App() {
   return (
@@ -10,7 +11,8 @@ export default function App() {
      
       <HUD />
        {/* <MobileControls /> */}
-          <BGM src="/sounds/bgm.mp3" volume={0.3} />
+          <BGM src="/sounds/bgm.mp3" volume={0.1} />
+          <BossCutscene/>
       <GameCanvas />
     </div>
   )

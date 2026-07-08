@@ -9,6 +9,8 @@ import BulletSystem from './BulletSystem'
 import BulletHoleSystem from './BulletHole'
 import EnemyTargets from './EnemyTarget'
 import { useGameStore } from '../store/UserStore.js'
+import BossCutscene from './BossCutscene'
+import BossSpawner  from './Boss'
 
 const SPEED        = 5
 const SPRINT_SPEED = 10
@@ -32,6 +34,7 @@ export default function Player() {
   const onGround    = useRef(false)
   const playerRef   = useRef()
   const bulletRef   = useRef()
+  const bossRef = useRef()
 
   const bobTimer    = useRef(0)
   const currentBobY = useRef(0)
@@ -124,7 +127,11 @@ export default function Player() {
       window.removeEventListener('mouseup', onMouseUp)
     }
   }, [])
-
+    useEffect(() => {
+  enemyGroupsRef.current['boss'] = {
+    takeDamage: (dmg) => bossRef.current?.takeDamage(dmg)
+  }
+}, [])
   useFrame((_, delta) => {
     if (!playerRef.current) return
     const body    = playerRef.current
@@ -153,6 +160,7 @@ console.log(camera.position)
 
     const isSprinting  = keys.current['ShiftLeft'] || keys.current['ShiftRight']
     const currentSpeed = isSprinting ? SPRINT_SPEED : SPEED
+    
 
     // Fire
     if (isFiring.current) {
@@ -166,6 +174,9 @@ console.log(camera.position)
     } else {
       fireTimer.current = 0
     }
+
+
+
 
     // Movement
     const forward = new THREE.Vector3()
@@ -257,6 +268,8 @@ console.log(camera.position)
       <MuzzleFlash isShooting={isShooting} />
       <BulletSystem ref={bulletRef} hitsRef={hitsRef} enemyGroupsRef={enemyGroupsRef} />
       <BulletHoleSystem hitsRef={hitsRef} />
+      
+      <BossSpawner bossRef={bossRef} />
       <EnemyTargets enemyRefs={enemyGroupsRef} />
     </>
   )

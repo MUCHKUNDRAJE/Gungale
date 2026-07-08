@@ -95,7 +95,7 @@ export const BulletSystem = forwardRef(({ hitsRef, enemyGroupsRef }, ref) => {
       // Walk up parent chain to find enemy
       let obj = first.object
       while (obj) {
-        if (obj.userData?.isEnemy) {
+        if (obj.userData?.isEnemy || obj.userData?.isBoss) {
           hitEnemyId = obj.userData.enemyId
           break
         }

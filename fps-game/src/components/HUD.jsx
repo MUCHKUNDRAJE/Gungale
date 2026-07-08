@@ -1,7 +1,74 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef , useState} from 'react'
 import { useGameStore } from '../store/UserStore.js'
 
 const MAX_AMMO = 72
+
+function BossHPBar() {
+  const bosshp  = useGameStore((s) => s.bossHp ?? 4000)
+  const hpPct   = bosshp / 4000
+  const enraged = hpPct < 0.3
+
+  const bossColor = hpPct > 0.5 ? '#cc2222' : hpPct > 0.25 ? '#ffaa00' : '#ff0000'
+
+  return (
+    <div style={{
+      position: 'absolute',
+      bottom: 80, left: '50%',
+      transform: 'translateX(-50%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+      pointerEvents: 'none',
+    }}>
+
+      {/* Name label — matches your HP label style */}
+      <div className="flex items-center justify-between perspective-dramatic gap-5">
+        <span
+          className="text-2xl league-gothic font-bold tracking-widest uppercase"
+          style={{
+            color: enraged ? '#ff2222' : 'rgba(255,100,100,0.9)',
+            animation: enraged ? 'criticalPulse 0.6s ease-in-out infinite' : 'none',
+          }}
+        >
+          ☠ PHANTOM OVERLORD
+        </span>
+      </div>
+
+      {/* HP number — matches your big % number */}
+    
+
+      {/* Bar — matches your HP bar exactly */}
+      <div className="flex items-center justify-between perspective-dramatic gap-5">
+        <span
+          className="text-2xl league-gothic font-bold tracking-widest -translate-y-2 uppercase"
+          style={{ color: 'white' }}
+        >
+          HP
+        </span>
+
+        <div
+          className="relative h-6 overflow-hidden translate-z-4 -translate-y-2 rotate-x-20"
+          style={{
+            width: 620,
+            background: 'rgba(255,255,255,0.08)',
+            border: `1px solid ${enraged ? '#ff2222' : 'white'}`,
+            boxShadow: enraged ? '0 0 20px #ff000066' : 'none',
+          }}
+        >
+          <div
+            className="absolute left-0 top-0 h-full border border-white"
+            style={{
+              width: `${hpPct * 100}%`,
+              background: `linear-gradient(90deg, ${bossColor}99, ${bossColor})`,
+              boxShadow: `0 0 8px ${bossColor}`,
+              transition: 'width 0.2s ease, background 0.4s ease',
+              animation: enraged ? 'barFlash 0.8s ease-in-out infinite' : 'none',
+            }}
+          />
+        </div>
+      </div>
+
+    </div>
+  )
+}
 
 export default function HUD() {
   const { health, shield, energy, ammo, kills, isHit, GunChoose, isLocked, isGameOver } = useGameStore()
@@ -9,6 +76,8 @@ export default function HUD() {
   const isCritical = health <= 25
   const hpColor    = health > 50 ? '#28992c' : health > 25 ? '#ffaa00' : '#ff3333'
   const hpPct      = health / 100
+  const bossActive   = useGameStore((s) => s.bossActive)
+const bossDefeated = useGameStore((s) => s.bossDefeated)
 
   // ── Loss sound ───────────────────────────────────────
   const lossSoundPlayed = useRef(false)
@@ -36,7 +105,72 @@ export default function HUD() {
           from { opacity: 0; transform: scale(0.95); }
           to   { opacity: 1; transform: scale(1); }
         }
+        @keyframes victoryFade {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
       `}</style>
+
+      {/* ── Victory screen ── */}
+      {bossDefeated && !isGameOver && (
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(4,16,10,0.94)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          zIndex: 100,
+          fontFamily: "'Courier New', monospace",
+          color: 'white',
+          animation: 'victoryFade 0.6s ease forwards',
+        }}>
+          <h1 className="league-gothic" style={{
+            fontSize: 100,
+            letterSpacing: 6,
+            color: '#4dff88',
+            textShadow: '0 0 40px #00ff6688',
+            marginBottom: 8,
+          }}>
+            VICTORY
+          </h1>
+
+          <p className="league-gothic" style={{
+            fontSize: 22,
+            color: 'rgba(160,255,180,0.8)',
+            letterSpacing: 3,
+            marginBottom: 12,
+          }}>
+            YOU DEFEATED THE PHANTOM OVERLORD
+          </p>
+
+          <p className="league-gothic" style={{
+            fontSize: 24,
+            color: 'rgba(220,255,220,0.55)',
+            letterSpacing: 2,
+            marginBottom: 48,
+          }}>
+            KILLS: {kills}
+          </p>
+
+          <button
+            className="league-gothic"
+            onClick={() => window.location.reload()}
+            style={{
+              border: '1px solid rgba(80,255,120,0.4)',
+              background: 'rgba(70,255,120,0.14)',
+              color: 'white',
+              padding: '14px 60px',
+              fontSize: 36,
+              letterSpacing: 3,
+              cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={e => e.target.style.background = 'rgba(70,255,120,0.28)'}
+            onMouseLeave={e => e.target.style.background = 'rgba(70,255,120,0.14)'}
+          >
+            PLAY AGAIN
+          </button>
+        </div>
+      )}
 
       {/* ── Game Over screen ── */}
       {isGameOver && (
@@ -179,6 +313,18 @@ export default function HUD() {
             </div>
             <p className="ml-7 league-gothic text-3xl">{GunChoose}</p>
           </div>
+          
+{bossActive && !bossDefeated && (
+  <div style={{
+    position: 'absolute',
+    bottom: 24,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    pointerEvents: 'none',
+  }}>
+    <BossHPBar />
+  </div>
+)}
 
           <div style={{
             position: 'absolute', bottom: 14, right: 14,
