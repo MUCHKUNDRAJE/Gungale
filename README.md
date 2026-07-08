@@ -4,7 +4,7 @@ A first-person shooter demo built with React, Vite, React Three Fiber, @react-th
 
 ## Play the game
 
-[▶ Play Now](https://muchkundraje.github.io/Gungale/)
+[▶ Play Now](https://gungale-qik2.vercel.app/)
 
 
 ## Demo Video
@@ -18,17 +18,30 @@ If you add a demo video file to `public/demo.mp4`, it will be visible here in su
 ## Screenshots
 
 ![Game screenshot](/demos/ss.gif)
-[Game screenshot](/demos/1.png)
-## Zoom in scope 
-[Game screenshot](/demos/2.png)
-[Game screenshot](/demos/3.png)
-## Ghost Enemy 
-[Game screenshot](/demos/4.png)
-## Gun switch UI 
-[Game screenshot](/demos/5.png)
-[Game screenshot](/demos/6.png)
-## Boss Fight 
-[Game screenshot](/demos/7.png)
+
+
+![Game screenshot](demos/1.png)
+
+## Zoom in scope
+
+![Game screenshot](demos/2.png)
+
+![Game screenshot](demos/3.png)
+
+## Ghost Enemy
+
+![Game screenshot](demos/4.png)
+
+## Gun switch UI
+
+![Game screenshot](demos/5.png)
+
+![Game screenshot](demos/6.png)
+
+## Boss Fight
+
+![Game screenshot](demos/7.png)
+
 [Game screenshot](/demos/8.png)
 
 ### Boss encounter highlights
