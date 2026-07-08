@@ -1,6 +1,11 @@
 # fps-game — WebGL FPS demo (React + Vite)
 
-A first-person shooter demo built with React, Vite, React Three Fiber, @react-three/rapier physics, and Zustand state management. The demo features a pointer-lock player, weapon models, enemy targets with simple AI, an interactive HUD, and post-processing effects.
+A first-person shooter demo built with React, Vite, React Three Fiber, @react-three/rapier physics, and Zustand state management. The game mixes fast-paced combat, cinematic boss encounters, and a stylized HUD with a dramatic zoom-in effect that makes every shot feel more intense.
+
+## Play the game
+
+[▶ Play Now](https://muchkundraje.github.io/Gungale/)
+
 
 ## Demo Video
 
@@ -10,11 +15,31 @@ If you add a demo video file to `public/demo.mp4`, it will be visible here in su
   Your browser does not support the video tag.
 </video>
 
-## Screenshot
+## Screenshots
 
 ![Game screenshot](/demos/ss.gif)
+[Game screenshot](/demos/1.png)
+## Zoom in scope 
+[Game screenshot](/demos/2.png)
+[Game screenshot](/demos/3.png)
+## Ghost Enemy 
+[Game screenshot](/demos/4.png)
+## Gun switch UI 
+[Game screenshot](/demos/5.png)
+[Game screenshot](/demos/6.png)
+## Boss Fight 
+[Game screenshot](/demos/7.png)
+[Game screenshot](/demos/8.png)
 
-> Add a screenshot file at `fps-game/public/screenshot.png` to display the game image here.
+### Boss encounter highlights
+- A cinematic boss cutscene introduces the Phantom Overlord before the fight begins.
+- The boss has a visible health bar and enraged state as its health drops.
+- Defeating the boss triggers a victory screen and a strong sense of progression.
+
+### Zoom-in effect
+When the player gets hit or enters a high-intensity moment, the game uses a sharp visual zoom and impact feedback to make the action feel more dramatic and immersive.
+
+> Add more screenshots to the project and link them here for a richer gallery.
 
 ## Getting started
 
@@ -51,6 +76,8 @@ npm run preview
 - Pointer lock controls via `@react-three/drei`
 - Multiple weapons with view models, recoil, and firing sound effects
 - Enemy ghosts with wandering AI, health bars, and kill counting
+- Boss fight system with a cinematic intro, health bar, enraged phase, and defeat screen
+- Dramatic zoom-in and hit feedback to emphasize danger and impact
 - Post-processing: SSAO, chromatic aberration, vignetting, and tone mapping
 - HUD showing ammo, kills, weapon name, objective, and hit feedback
 - Static world loaded from a GLB environment model with trimesh collision
