@@ -19,6 +19,9 @@ If you add a demo video file to `public/demo.mp4`, it will be visible here in su
 
 ![Game screenshot](/demos/ss.gif)
 
+## Game Interface 
+![Game screenshot](demos/9.png)
+
 
 ![Game screenshot](demos/1.png)
 
