@@ -42,7 +42,7 @@ If you add a demo video file to `public/demo.mp4`, it will be visible here in su
 
 ![Game screenshot](demos/7.png)
 
-[Game screenshot](/demos/8.png)
+![Game screenshot](/demos/8.png)
 
 ### Boss encounter highlights
 - A cinematic boss cutscene introduces the Phantom Overlord before the fight begins.
